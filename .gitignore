@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+backend/venv/
+.env
+.venv/
+.pytest_cache/
+
+# NodeJS / NextJS
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/dist/
+
+# Storage / User Uploads / 3D
+backend/storage/
+*.step
+*.stp
+*.stl
+*.glb
+test.glb
+
+# System
+.DS_Store
+Thumbs.db
