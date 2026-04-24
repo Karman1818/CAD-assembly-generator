@@ -64,8 +64,8 @@ export function AssemblyInstructions({
   const step = steps[currentStep];
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-zinc-950 w-full max-w-5xl h-full max-h-[850px] rounded-[2.5rem] border border-zinc-800 shadow-2xl flex flex-col overflow-hidden relative">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300 pointer-events-auto">
+      <div className="bg-zinc-950 w-full max-w-5xl h-full max-h-[850px] rounded-[2.5rem] border border-zinc-800 shadow-2xl flex flex-col overflow-hidden relative pointer-events-auto">
         
         {/* Header */}
         <div className="p-6 md:p-8 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/40 backdrop-blur-md">

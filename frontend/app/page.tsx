@@ -5,7 +5,6 @@ import { UploadForm } from '@/components/upload/UploadForm';
 import { MainScene } from '@/components/3d/MainScene';
 import { PartsList } from '@/components/3d/PartsList';
 import { AssemblyInstructions } from '@/components/3d/AssemblyInstructions';
-import { PrintableInstructions } from '@/components/3d/PrintableInstructions';
 import { FileText, Wand2, Loader2 } from 'lucide-react';
 import { API_BASE_URL, generateAssemblyInstructions } from '@/lib/api';
 
@@ -172,8 +171,6 @@ export default function Home() {
             onDownloadPdf={handleDownloadPdf}
           />
         )}
-
-        <PrintableInstructions data={assemblyData} />
       </div>
     </main>
   );
