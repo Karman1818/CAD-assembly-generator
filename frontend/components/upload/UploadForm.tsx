@@ -5,7 +5,7 @@ import { uploadStepFile } from '@/lib/api';
 import { ProgressBar } from './ProgressBar';
 import { UploadCloud, FileType2 } from 'lucide-react';
 
-export function UploadForm({ onModelReady }: { onModelReady: (url: string) => void }) {
+export function UploadForm({ onModelReady }: { onModelReady: (jobId: string) => void }) {
   const [jobId, setJobId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 

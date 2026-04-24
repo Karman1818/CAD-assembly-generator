@@ -1,8 +1,5 @@
-import { Outfit } from 'next/font/google'
 import type { Metadata } from 'next'
 import './globals.css'
-
-const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' })
 
 export const metadata: Metadata = {
   title: 'CAD Assembly Generator',
@@ -15,7 +12,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pl" className={outfit.variable}>
+    <html lang="pl">
       <body className="font-sans antialiased text-slate-200 selection:bg-indigo-500/30">
         {children}
       </body>

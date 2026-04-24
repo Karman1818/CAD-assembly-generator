@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Segoe UI", "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
 }
 @layer base {
   :root {
@@ -34,5 +34,4 @@
     --ring: 240 4.9% 83.9%;
   }
 }
-
 

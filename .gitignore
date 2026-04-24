@@ -24,6 +24,8 @@ backend/storage/
 *.stl
 *.glb
 test.glb
+test_hlr.svg
+run-logs/
 
 # System
 .DS_Store

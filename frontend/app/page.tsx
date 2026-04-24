@@ -3,27 +3,98 @@
 import React, { useState } from 'react';
 import { UploadForm } from '@/components/upload/UploadForm';
 import { MainScene } from '@/components/3d/MainScene';
+import { PartsList } from '@/components/3d/PartsList';
+import { AssemblyInstructions } from '@/components/3d/AssemblyInstructions';
+import { PrintableInstructions } from '@/components/3d/PrintableInstructions';
+import { FileText, Wand2, Loader2 } from 'lucide-react';
+import { API_BASE_URL, generateAssemblyInstructions } from '@/lib/api';
+
+interface AssemblyPartRef {
+  part_id: string;
+  quantity_in_step: number;
+  svgUrl?: string;
+  type?: 'panel' | 'connector' | 'other';
+  dimensions?: number[];
+  label?: string;
+}
+
+interface AssemblyStep {
+  step_number: number;
+  title: string;
+  description: string;
+  parts_used: AssemblyPartRef[];
+  sceneSvgUrl?: string;
+  scenePngUrl?: string;
+}
+
+interface AssemblyData {
+  title: string;
+  steps: AssemblyStep[];
+  pdfUrl?: string;
+  overviewSvgUrl?: string;
+  overviewPngUrl?: string;
+  generationMode?: string;
+  generationWarning?: string;
+  parts_list?: Array<{
+    id: string;
+    label?: string;
+    type: string;
+    quantity: number;
+    dimensions: number[];
+    svgUrl?: string | null;
+  }>;
+}
 
 export default function Home() {
-  const [cadUrl, setModelUrl] = useState<string | null>(null);
+  const [cadJobId, setCadJobId] = useState<string | null>(null);
   const [explosion, setExplosion] = useState(0);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [assemblyData, setAssemblyData] = useState<AssemblyData | null>(null);
+  const [showInstructions, setShowInstructions] = useState(false);
+
+  const modelUrl = cadJobId ? `${API_BASE_URL}/api/files/${cadJobId}.glb` : null;
+
+  const handleGenerateInstructions = async () => {
+    if (!cadJobId) return;
+    setIsGenerating(true);
+    try {
+      const data = await generateAssemblyInstructions(cadJobId);
+      setAssemblyData(data);
+      setShowInstructions(true);
+    } catch (e) {
+      console.error(e);
+      const message = e instanceof Error ? e.message : 'Nie udało się wygenerować instrukcji.';
+      alert(`Błąd: ${message}`);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleDownloadPdf = () => {
+    if (!assemblyData?.pdfUrl) {
+      window.print();
+      return;
+    }
+    window.open(`${API_BASE_URL}${assemblyData.pdfUrl}`, '_blank', 'noopener,noreferrer');
+  };
 
   return (
-    <main className="h-screen w-screen relative overflow-hidden">
+    <main className="h-screen w-screen relative overflow-hidden flex flex-col">
       {/* 3D Background - always interactive */}
       <div className="absolute inset-0 z-0">
-        <MainScene modelUrl={cadUrl} explosion={explosion} />
+        <MainScene modelUrl={modelUrl} explosion={explosion} />
       </div>
 
       {/* UI Overlay - sits above 3D */}
-      <div className="absolute inset-0 z-10 pointer-events-none flex flex-col items-center justify-center">
-        {!cadUrl && (
+      <div className="relative z-10 flex items-center justify-center h-full pointer-events-none">
+        
+        {!cadJobId && (
           <div className="w-full px-4 pointer-events-auto">
-            <UploadForm onModelReady={(url) => setModelUrl(url)} />
+            <UploadForm onModelReady={(jobId) => setCadJobId(jobId)} />
           </div>
         )}
         
-        {cadUrl && (
+        {cadJobId && (
           <div className="absolute top-10 left-10 flex flex-col gap-3 pointer-events-auto max-w-xs">
             
             <div className="p-5 bg-zinc-900/40 rounded-2xl border border-zinc-800/50 backdrop-blur-xl shadow-2xl flex flex-col gap-4">
@@ -33,7 +104,7 @@ export default function Home() {
                   <span className="text-xs tracking-wider uppercase font-semibold">Live Mode</span>
                 </div>
                 <button 
-                  onClick={() => { setModelUrl(null); setExplosion(0); }}
+                  onClick={() => { setCadJobId(null); setExplosion(0); setAssemblyData(null); }}
                   className="px-3 py-1.5 bg-zinc-800/50 hover:bg-zinc-700/80 border border-zinc-700/50 rounded-lg text-xs font-medium text-zinc-300 hover:text-white transition-all shadow-sm"
                 >
                   Close Model
@@ -54,6 +125,33 @@ export default function Home() {
                 />
               </div>
 
+              <div className="w-full h-px bg-zinc-800/60" />
+
+              <div className="flex flex-col gap-2">
+                <button 
+                  onClick={handleGenerateInstructions}
+                  disabled={isGenerating}
+                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-zinc-800 disabled:text-zinc-500 rounded-xl text-white text-sm font-medium transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] flex items-center justify-center gap-2 group"
+                >
+                  {isGenerating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Wand2 className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                  )}
+                  {isGenerating ? 'Generowanie...' : 'Generuj AI Instrukcję'}
+                </button>
+
+                {assemblyData && (
+                  <button 
+                    onClick={() => setShowInstructions(true)}
+                    className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl text-white text-sm font-medium transition-all border border-zinc-700/50 flex items-center justify-center gap-2"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Pokaż Instrukcję
+                  </button>
+                )}
+              </div>
+
               <div className="p-3 bg-zinc-950/50 rounded-xl border border-zinc-800/30 text-xs text-zinc-400 font-light leading-relaxed">
                 <span className="block text-zinc-300 font-medium mb-1">Controls</span>
                 <span className="text-blue-400">Left Click</span> to rotate, <span className="text-blue-400">Right Click</span> to pan, and <span className="text-blue-400">Scroll</span> to zoom.
@@ -62,6 +160,20 @@ export default function Home() {
 
           </div>
         )}
+        
+        {cadJobId && (
+          <PartsList jobId={cadJobId} />
+        )}
+
+        {showInstructions && assemblyData && (
+          <AssemblyInstructions 
+            data={assemblyData} 
+            onClose={() => setShowInstructions(false)} 
+            onDownloadPdf={handleDownloadPdf}
+          />
+        )}
+
+        <PrintableInstructions data={assemblyData} />
       </div>
     </main>
   );

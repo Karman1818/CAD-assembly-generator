@@ -2,7 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from backend.api.router import api_router
+from dotenv import load_dotenv
 import os
+
+load_dotenv(dotenv_path="backend/.env")
 
 app = FastAPI(title="CAD Assembly Generator API")
 

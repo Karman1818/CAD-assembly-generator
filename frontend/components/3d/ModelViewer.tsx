@@ -31,7 +31,7 @@ export function ModelViewer({ url, explosion = 0 }: { url: string, explosion?: n
           const partCenter = new THREE.Vector3()
           partBox.getCenter(partCenter)
           
-          let direction = new THREE.Vector3().subVectors(partCenter, assemblyCenter).normalize()
+          const direction = new THREE.Vector3().subVectors(partCenter, assemblyCenter).normalize()
           if (direction.lengthSq() === 0) direction.set(0, 1, 0)
           
           mesh.userData.direction = direction

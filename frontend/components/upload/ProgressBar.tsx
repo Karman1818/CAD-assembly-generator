@@ -2,15 +2,16 @@
 
 import React, { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/api';
 
-export function ProgressBar({ jobId, onComplete }: { jobId: string, onComplete: (url: string) => void }) {
+export function ProgressBar({ jobId, onComplete }: { jobId: string, onComplete: (jobId: string) => void }) {
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState('Initializing CAD Pipeline...');
 
   useEffect(() => {
     if (!jobId) return;
 
-    const eventSource = new EventSource(`http://localhost:8000/api/step/progress/${jobId}/stream`);
+    const eventSource = new EventSource(`${API_BASE_URL}/api/step/progress/${jobId}/stream`);
 
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -22,7 +23,7 @@ export function ProgressBar({ jobId, onComplete }: { jobId: string, onComplete: 
         if (data.result_model_url) {
           // Add a short delay for animation completion to show "100%" smoothly
           setTimeout(() => {
-             onComplete(`http://localhost:8000${data.result_model_url}`);
+             onComplete(jobId);
           }, 800);
         }
       } else if (data.status === 'error' || data.status === 'failed') {
